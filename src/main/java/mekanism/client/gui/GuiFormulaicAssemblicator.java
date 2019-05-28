@@ -14,6 +14,7 @@ import mekanism.client.gui.element.GuiSlot.SlotOverlay;
 import mekanism.client.gui.element.GuiSlot.SlotType;
 import mekanism.client.gui.element.GuiTransporterConfigTab;
 import mekanism.client.gui.element.GuiUpgradeTab;
+import mekanism.client.render.MekanismRenderHelper;
 import mekanism.client.render.MekanismRenderer;
 import mekanism.client.sound.SoundHandler;
 import mekanism.common.Mekanism;
@@ -24,8 +25,6 @@ import mekanism.common.tile.TileEntityFormulaicAssemblicator;
 import mekanism.common.util.LangUtils;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.MekanismUtils.ResourceType;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Slot;
@@ -159,7 +158,7 @@ public class GuiFormulaicAssemblicator extends GuiMekanismTile<TileEntityFormula
 
                 if (!stack.isEmpty()) {
                     Slot slot = inventorySlots.inventorySlots.get(i + 20);
-                    GlStateManager.pushMatrix();
+                    MekanismRenderHelper renderHelper = new MekanismRenderHelper(true);
 
                     int guiX = guiWidth + slot.xPos;
                     int guiY = guiHeight + slot.yPos;
@@ -167,10 +166,9 @@ public class GuiFormulaicAssemblicator extends GuiMekanismTile<TileEntityFormula
                         drawGradientRect(guiX, guiY, guiX + 16, guiY + 16, -2137456640, -2137456640);
                     }
 
-                    RenderHelper.enableGUIStandardItemLighting();
+                    renderHelper.enableGUIStandardItemLighting();
                     itemRender.renderItemAndEffectIntoGUI(stack, guiX, guiY);
-                    MekanismRenderer.resetColor();
-                    GlStateManager.popMatrix();
+                    renderHelper.cleanup();
                 }
             }
         }
