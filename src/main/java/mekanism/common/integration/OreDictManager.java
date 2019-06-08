@@ -19,6 +19,7 @@ import mekanism.common.recipe.RecipeHandler;
 import mekanism.common.recipe.RecipeHandler.Recipe;
 import mekanism.common.util.MekanismUtils;
 import mekanism.common.util.StackUtils;
+import mekanism.common.world.DummyWorld;
 import net.minecraft.block.BlockPlanks;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -27,16 +28,23 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.FurnaceRecipes;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.NonNullList;
+import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.common.Mod.EventBusSubscriber;
 import net.minecraftforge.fml.common.Optional.Method;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 
+@EventBusSubscriber(modid = Mekanism.MODID)
 public final class OreDictManager {
 
     private static final List<String> minorCompatIngot = Arrays.asList("Aluminum", "Draconium", "Iridium", "Mithril", "Nickel", "Platinum", "Uranium");
     private static final List<String> minorCompatGem = Arrays.asList("Amber", "Diamond", "Emerald", "Malachite", "Peridot", "Ruby", "Sapphire", "Tanzanite", "Topaz");
 
-    public static void init() {
+    @SubscribeEvent(priority = EventPriority.LOW)
+    public static void init(RegistryEvent.Register<IRecipe> event) {
         addLogRecipes();
 
         List<ItemStack> oreDict;
@@ -402,6 +410,10 @@ public final class OreDictManager {
                 return false;
             }
         };
+        DummyWorld dummyWorld = null;
+        try {
+            dummyWorld = new DummyWorld();
+        } catch (Exception ignored){}
 
         InventoryCrafting tempCrafting = new InventoryCrafting(tempContainer, 3, 3);
 
@@ -414,17 +426,17 @@ public final class OreDictManager {
         for (ItemStack logEntry : logs) {
             if (logEntry.getItemDamage() == OreDictionary.WILDCARD_VALUE) {
                 for (int j = 0; j < 16; j++) {
-                    addSawmillLog(tempCrafting, new ItemStack(logEntry.getItem(), 1, j));
+                    addSawmillLog(tempCrafting, new ItemStack(logEntry.getItem(), 1, j), dummyWorld);
                 }
             } else {
-                addSawmillLog(tempCrafting, StackUtils.size(logEntry, 1));
+                addSawmillLog(tempCrafting, StackUtils.size(logEntry, 1), dummyWorld);
             }
         }
     }
 
-    private static void addSawmillLog(InventoryCrafting tempCrafting, ItemStack log) {
+    private static void addSawmillLog(InventoryCrafting tempCrafting, ItemStack log, DummyWorld world) {
         tempCrafting.setInventorySlotContents(0, log);
-        ItemStack resultEntry = MekanismUtils.findMatchingRecipe(tempCrafting, null);
+        ItemStack resultEntry = MekanismUtils.findMatchingRecipe(tempCrafting, world);
 
         if (!resultEntry.isEmpty()) {
             RecipeHandler.addPrecisionSawmillRecipe(log, StackUtils.size(resultEntry, 6), new ItemStack(MekanismItems.Sawdust),
