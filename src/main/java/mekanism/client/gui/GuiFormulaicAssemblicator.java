@@ -15,7 +15,6 @@ import mekanism.client.gui.element.GuiSlot.SlotType;
 import mekanism.client.gui.element.GuiTransporterConfigTab;
 import mekanism.client.gui.element.GuiUpgradeTab;
 import mekanism.client.render.MekanismRenderHelper;
-import mekanism.client.render.MekanismRenderer;
 import mekanism.client.sound.SoundHandler;
 import mekanism.common.Mekanism;
 import mekanism.common.inventory.container.ContainerFormulaicAssemblicator;
@@ -163,8 +162,7 @@ public class GuiFormulaicAssemblicator extends GuiMekanismTile<TileEntityFormula
                     int guiX = guiWidth + slot.xPos;
                     int guiY = guiHeight + slot.yPos;
                     if (slot.getStack().isEmpty() || !ItemHandlerHelper.canItemStacksStack(slot.getStack(), stack)) {
-                        int color = MekanismRenderer.getColorARGB(EnumColor.DARK_RED);
-                        drawGradientRect(guiX, guiY, guiX + 16, guiY + 16, color, color);
+                        drawColorIcon(guiX, guiY, EnumColor.DARK_RED, 0.8F);
                     }
 
                     renderHelper.enableGUIStandardItemLighting();
